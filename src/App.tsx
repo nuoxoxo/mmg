@@ -168,7 +168,7 @@ const App = () => {
   return (
     <>
       <div className='App'>
-        <h1> open console and see more! </h1>
+        {/* <h1> open console and see more! </h1> */}
         <div className='btn'>
           <button onClick={ shuffle_matching_pairs }>New Game</button>
         </div>
