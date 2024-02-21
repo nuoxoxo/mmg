@@ -23,12 +23,13 @@ const CardBackDefault: string = makeImgurStr (CardBackDefault_id)
 
 const shuffle_fisher_yates = (arr: { src: string }[]): { src: string }[] => {
 
-  let currIdx = arr.length
-  while (currIdx > 0) {
-    let randIdx = Math.floor(Math.random() * currIdx)
-    currIdx--
-    [arr[currIdx], arr[randIdx]] = [arr[randIdx], arr[currIdx]]
-  }
+  // let currIdx = arr.length
+  // while (currIdx > 0) {
+  //   let randIdx = Math.floor(Math.random() * currIdx)
+  //   currIdx--
+  //   [arr[currIdx], arr[randIdx]] = [arr[randIdx], arr[currIdx]]
+  // }
+  arr.sort(() => Math.random() - .5)
   return arr
 }
 
