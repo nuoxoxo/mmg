@@ -1,0 +1,35 @@
+$Card-size: 210px;
+$Flip-speed: 0.15s;
+
+.cards-card-div {
+  .cards-card {
+    object-fit: cover;
+    width: $Card-size;
+    height: $Card-size;
+  }
+
+  // BACK
+  .cards-card-back {
+    transform: rotateY(90deg);
+    transition: all ease-in $Flip-speed;
+    position: absolute;
+    
+  }
+
+  .flipped .cards-card-back {
+    transform: rotateY(0deg);
+    transition-delay: $Flip-speed;
+  }
+
+  // FRONT
+  .cards-card-front {
+    transition: all ease-in $Flip-speed;
+    transition-delay: $Flip-speed;
+  }
+
+  .flipped .cards-card-front {
+    transform: rotateY(90deg);
+    transition-delay: 0s;
+  }
+
+}

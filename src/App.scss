@@ -1,0 +1,53 @@
+//  MOVED ---> Card component
+// $Card-size: 210px;
+
+// html, body { height: 100%; }
+
+// :root {
+//   color: rgba(255, 255, 255, 0.87);
+//   background-color: #242424;
+// }
+
+.App {
+  max-width: 860px;
+  margin: 40px auto;
+  // display: flex;
+  // flex-direction: column;
+
+  // .btn { padding-bottom: 12px; }
+
+  button {
+    background: none;
+    border: 2px solid #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover{
+    background: #c23800;
+  }
+
+  .cards-grid {
+    margin-top: 21px;
+    display: grid;
+    // trying this:
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 20px;
+  }
+
+  //  MOVED ---> Card component
+  // .cards-card {
+  //   object-fit: cover;
+  //   width: $Card-size;
+  //   height: $Card-size;
+  // }
+
+}
+
+// @media (prefers-color-scheme: light) {
+//   :root {
+//     color: #213547;
+//     background-color: #ffffff;
+//   }
+// }
