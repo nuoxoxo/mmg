@@ -12,10 +12,20 @@ const makeImgurStr = (id: string): string => {
 
 
 //  this the default image of the card
-
-const CardBackDefault_id : string = [
-  'OeqF6i7', 'Gh7ORYQ'
-][1]//Math.floor(Math.random() * 2)]
+const CardBackDefault_array:string[] = [
+  'uwCi1Vq',
+  'Qh4bQ1D',
+  'v3N6Jpc',
+  'htyq4QF',
+  'OBb9MAP',
+  'W463cuz',
+  'Gh7ORYQ',
+  'MvE8oPW',
+  // 'OeqF6i7', 'LhpcDwF'
+]
+const CardBackDefault_id : string = CardBackDefault_array[ 
+  Math.floor(Math.random() * CardBackDefault_array.length)
+]
 const CardBackDefault: string = makeImgurStr (CardBackDefault_id)
 
 
@@ -23,12 +33,14 @@ const CardBackDefault: string = makeImgurStr (CardBackDefault_id)
 
 const shuffle_fisher_yates = (arr: { src: string }[]): { src: string }[] => {
 
-  // let currIdx = arr.length
-  // while (currIdx > 0) {
-  //   let randIdx = Math.floor(Math.random() * currIdx)
-  //   currIdx--
-  //   [arr[currIdx], arr[randIdx]] = [arr[randIdx], arr[currIdx]]
-  // }
+  /*
+  let currIdx = arr.length
+  while (currIdx > 0) {
+    let randIdx = Math.floor(Math.random() * currIdx)
+    currIdx--
+    [arr[currIdx], arr[randIdx]] = [arr[randIdx], arr[currIdx]]
+  }
+  */
   arr.sort(() => Math.random() - .5)
   return arr
 }
@@ -36,6 +48,34 @@ const shuffle_fisher_yates = (arr: { src: string }[]): { src: string }[] => {
 
 //  default card collection
 
+const readLinesFromInfile = async (): Promise<{ src: string }[]> => {
+  try {
+    const repo: string = 'https://raw.githubusercontent.com/nuoxoxo/in/main/'
+    let filepaths = Array.from({ length: 7 }, (_, idx) => 
+      `${repo}limited_edition_0${idx + 1}.in`
+    )
+    filepaths = [
+      ... filepaths,
+      repo + 'canciones.json',
+      repo + 'canciones_edition_jazz.json'
+    ]
+    // console.log(filepaths, filepaths.length)
+    const set: Set<{ src: string }> = new Set()
+    for (const filepath of filepaths) {
+      const response = await fetch (filepath)
+      if (!response.ok) throw new Error('failed fecthing');
+      const data: Record<string, { cover: string }> = await response.json()
+      const lines = Object.values(data).map(({ cover }) => cover);
+      const temp = lines.map((line) => ({ src: line }))
+      temp.forEach( (item) => set.add (item))
+    }
+    return [ ... set ]
+  } catch (err) {
+    console.error(err)
+    return []
+  }
+}
+/*
 const CardsImgSrc: { src: string }[] = [
   { 'src': 'Hz1X0JH' },
   { 'src': '9yv2mCJ' },
@@ -54,8 +94,17 @@ const CardsImgSrc: { src: string }[] = [
   { 'src': 'BsP0ADp' },
   { 'src': 'WYnL0R8' },
 ]
+*/
 
 const App = () => {
+
+  const [CardsImgSrc, setCardsImgSrc] = useState<{ src: string }[]>([])
+  useEffect(() => {
+    // Call the function to read lines when the component mounts
+    readLinesFromInfile().then((arr: { src: string }[]) => {
+      setCardsImgSrc(arr);
+    });
+  }, []);
 
   // const [ Turns, setTurns ] = useState(0)
   const [ DuringFlip, setDuringFlip ] = useState<boolean>(false)
@@ -84,12 +133,13 @@ const App = () => {
   //  DBG
   // const [ hasClickedHandleGuessing, setHasClickedHandleGuessing ] = useState<boolean>(false)
 
-  // shuffle using F.Y.N. and select 8 items
-  const CardsImg8 = shuffle_fisher_yates([ ... CardsImgSrc]).slice(0, 8)
+  // shuffle using F.Y.N. and select N items
+  const N = 12
+  const CardsImgN = shuffle_fisher_yates([ ... CardsImgSrc]).slice(0, N)
 
   // double each item and shuffle w/ a condensed F.Y.N.
   const shuffle_matching_pairs = () => {
-    const res = [...CardsImg8, ...CardsImg8]
+    const res = [...CardsImgN, ...CardsImgN]
       .sort(() => Math.random() - .5)
       .map( (c) => ({
         ...c, 
@@ -102,6 +152,9 @@ const App = () => {
     // setTurns( 0 )
     setg1 (null)
     setg2 (null)
+
+    // setIsGameStarted(true) // NEW
+
   }
 
   // console.log('/dbg shuffle', Turns, Cards)
@@ -117,7 +170,6 @@ const App = () => {
     // setHasClickedHandleGuessing(true) // DBG
     g1 == null ? setg1( c ) : setg2( c )
     // console.log('/guessed', c.src, c.id ) // DBG
-
     // 👇 won't log bc. not finished updating the state ---> should use useEffect
     // console.log('/state/in handler', g1, g2 )
   }
@@ -128,7 +180,6 @@ const App = () => {
     setg2(null)
     // setTurns(Turns + 1)
     setTimeout(() => setDuringFlip (false), 100)
-    // 
   }
 
   // game starts onload
@@ -136,14 +187,14 @@ const App = () => {
     shuffle_matching_pairs()
     setg1(null)
     setg2(null)
-  }, [])
+  }, [ CardsImgSrc ]) // Bugfix :: auto-start game onload
 
   useEffect(() => {
 
     if ( g1 && g2 ) {
       setDuringFlip( true )
       if (g1.src == g2.src) {
-        console.log('/Same') // DBG
+        // console.log('/Same') // DBG
         // operation        
         setCards ( arr => {
           return arr.map(c => {
@@ -156,14 +207,39 @@ const App = () => {
         })
         reset ()
       } else {
-        console.log('/Diff') // DBG
+        // console.log('/Diff') // DBG
         setTimeout(() => reset (), 500)
         // needs timeout otherwise 2nd card wont flip
       }
     }
-  }, [g1, g2])
+  }, [g1, g2, Cards])
 
   // console.log(Cards) // DBG
+
+
+  // NEW
+  /*
+  const [timer, setTimer] = useState<number>(0)
+  const [isGameStarted, setIsGameStarted] = useState<boolean>(false)
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout
+
+    if (isGameStarted) {
+      intervalId = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 0.01)
+      }, 10)
+    }
+
+    return () => clearInterval(intervalId)
+  }, [isGameStarted])
+
+  useEffect(() => {
+    if (Cards.every((card) => card.matched)) {
+      setIsGameStarted(false)
+    }
+  }, [Cards])
+  */
+
 
   return (
     <>
@@ -172,6 +248,10 @@ const App = () => {
         <div className='btn'>
           <button onClick={ shuffle_matching_pairs }>New Game</button>
         </div>
+
+        {/*  NEW  */}
+        {/* <div className='timer'>Timer: {timer} seconds</div> */}
+
         <div className='cards-grid'>
 
           {/* NEW way : functional component*/}

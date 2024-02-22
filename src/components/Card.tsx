@@ -10,6 +10,7 @@ const Card = ({ c, flipped, handleGuessing, CardBackDefault, DuringFlip, } : {
 
   const handleClick = () => {
     if ( DuringFlip ) return
+    console.log(c.url)
     handleGuessing( c )
   }
 

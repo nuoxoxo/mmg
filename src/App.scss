@@ -9,7 +9,7 @@
 // }
 
 .App {
-  max-width: 860px;
+  max-width: 1024px;
   margin: 40px auto;
   // display: flex;
   // flex-direction: column;
@@ -32,8 +32,11 @@
     margin-top: 21px;
     display: grid;
     // trying this:
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 20px;
+    // grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: 214px;
+    align-items: center;
+    justify-items: center;
   }
 
   //  MOVED ---> Card component
