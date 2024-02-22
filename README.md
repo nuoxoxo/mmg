@@ -1,1 +1,1 @@
-- :green_circle: - now reads from hard-coded `string[]`
+:green_circle: - now reads from hard-coded `string[]`
