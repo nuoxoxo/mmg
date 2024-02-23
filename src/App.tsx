@@ -45,16 +45,21 @@ const readLinesFromInfile = async (): Promise<{ src: string }[]> => {
       repo + 'canciones.json',
       repo + 'canciones_edition_jazz.json'
     ]
-    const set: Set<{ src: string }> = new Set()
+    const TEMP: { src: string }[] = []
     for (const filepath of filepaths) {
       const response = await fetch (filepath)
       if (!response.ok) throw new Error('failed fecthing')
       const data: Record<string, { cover: string }> = await response.json()
       const lines = Object.values(data).map(({ cover }) => cover)
       const temp = lines.map((line) => ({ src: line }))
-      temp.forEach( (item) => set.add (item))
+      temp.forEach((item) => {
+        if (!TEMP.some(existingItem => existingItem.src === item.src)) {
+          TEMP.push(item);
+        }
+      })
     }
-    return [ ... set ]
+    // console.log(TEMP)
+    return TEMP
   } catch (err) {
     console.error(err)
     return []
@@ -150,11 +155,10 @@ const App = () => {
 
   // game starts onload
   useEffect (() => {
-    setCardBack(get_card_back())
     shuffle_matching_pairs()
     setg1(null)
     setg2(null)
-  }, [ CardsImgSrc ]) // Bugfix :: auto-start game onload
+  }, [ CardsImgSrc, CardBack ]) // Bugfix :: auto-start game onload
 
   useEffect(() => {
 
