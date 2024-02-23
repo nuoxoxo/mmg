@@ -34,7 +34,7 @@
     // trying this:
     // grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    column-gap: 214px;
+    column-gap: 190px;
     align-items: center;
     justify-items: center;
   }

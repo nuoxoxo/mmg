@@ -10,8 +10,14 @@ const makeImgurStr = (id: string): string => {
 
 //  this the default image of the card
 const CardBackDefault_array:string[] = [
+  'miu7iv4',
+  'z7MDnKu',
+  'jKIgFkO',
+  'q9Rj5Pq',
+  'mYM0HBn',
+  'a8eIFj7',
   'uwCi1Vq',
-  'Qh4bQ1D',
+  'taW0cYL',
   'v3N6Jpc',
   'htyq4QF',
   'OBb9MAP',
