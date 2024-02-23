@@ -17,10 +17,7 @@ const Card = ({ c, flipped, handleGuessing, CardBackDefault, DuringFlip, } : {
   return (
     <div key={c.id} className='cards-card-div'>
       <div className={flipped ? 'flipped' : ''}>
-        {/* <img className='cards-card cards=card-front' src={ c.url } /> */}
-        <img className='cards-card cards-card-back' src={ c.url }
-          // onClick={ handleClick }
-        />
+        <img className='cards-card cards-card-back' src={ c.url }/>
         <img className='cards-card cards-card-front' src={CardBackDefault}
           onClick={ handleClick }
         />
