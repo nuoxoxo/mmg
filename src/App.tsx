@@ -1,15 +1,12 @@
-// import { useState } from 'react'
 import { useEffect, useState } from 'react'
 import './App.scss'
 import Card from './components/Card'
 
 
-//  URL-string maker for a stripped github/in-styles ID tring
-
+// maker of imgur url string
 const makeImgurStr = (id: string): string => {
   return 'https://i.imgur.com/' + id + '.jpeg'
 }
-
 
 //  this the default image of the card
 const CardBackDefault_array:string[] = [
@@ -23,31 +20,22 @@ const CardBackDefault_array:string[] = [
   'MvE8oPW',
   // 'OeqF6i7', 'LhpcDwF'
 ]
-const CardBackDefault_id : string = CardBackDefault_array[ 
-  Math.floor(Math.random() * CardBackDefault_array.length)
-]
-const CardBackDefault: string = makeImgurStr (CardBackDefault_id)
+
+//  determin default card back patter
+const CardBackDefault: string = makeImgurStr (
+  CardBackDefault_array [
+    Math.floor(Math.random() * CardBackDefault_array.length)
+  ]
+)
 
 
-//  shuffle default card collection
-
+//  shuffle default card collection (FYN algo)
 const shuffle_fisher_yates = (arr: { src: string }[]): { src: string }[] => {
-
-  /*
-  let currIdx = arr.length
-  while (currIdx > 0) {
-    let randIdx = Math.floor(Math.random() * currIdx)
-    currIdx--
-    [arr[currIdx], arr[randIdx]] = [arr[randIdx], arr[currIdx]]
-  }
-  */
   arr.sort(() => Math.random() - .5)
   return arr
 }
 
-
 //  default card collection
-
 const readLinesFromInfile = async (): Promise<{ src: string }[]> => {
   try {
     const repo: string = 'https://raw.githubusercontent.com/nuoxoxo/in/main/'
@@ -59,13 +47,12 @@ const readLinesFromInfile = async (): Promise<{ src: string }[]> => {
       repo + 'canciones.json',
       repo + 'canciones_edition_jazz.json'
     ]
-    // console.log(filepaths, filepaths.length)
     const set: Set<{ src: string }> = new Set()
     for (const filepath of filepaths) {
       const response = await fetch (filepath)
-      if (!response.ok) throw new Error('failed fecthing');
+      if (!response.ok) throw new Error('failed fecthing')
       const data: Record<string, { cover: string }> = await response.json()
-      const lines = Object.values(data).map(({ cover }) => cover);
+      const lines = Object.values(data).map(({ cover }) => cover)
       const temp = lines.map((line) => ({ src: line }))
       temp.forEach( (item) => set.add (item))
     }
@@ -75,39 +62,11 @@ const readLinesFromInfile = async (): Promise<{ src: string }[]> => {
     return []
   }
 }
-/*
-const CardsImgSrc: { src: string }[] = [
-  { 'src': 'Hz1X0JH' },
-  { 'src': '9yv2mCJ' },
-  { 'src': '6MG5HPe' },
-  { 'src': 'zFmGDB4' },
-  { 'src': 'fkCw83t' },
-  { 'src': 'Aj8rD5P' },
-  { 'src': 'QP32pW4' },
-  { 'src': 'S6XtdpH' },
-  { 'src': 'N90grdZ' },
-  { 'src': 'bV9BjHm' },
-  { 'src': 'lsnQcbr' },
-  { 'src': 'OwDfLkA' },
-  { 'src': 'jWy7uCZ' },
-  { 'src': 'YjjHHWq' },
-  { 'src': 'BsP0ADp' },
-  { 'src': 'WYnL0R8' },
-]
-*/
 
 const App = () => {
 
   const [CardsImgSrc, setCardsImgSrc] = useState<{ src: string }[]>([])
-  useEffect(() => {
-    // Call the function to read lines when the component mounts
-    readLinesFromInfile().then((arr: { src: string }[]) => {
-      setCardsImgSrc(arr);
-    });
-  }, []);
-
-  // const [ Turns, setTurns ] = useState(0)
-  const [ DuringFlip, setDuringFlip ] = useState<boolean>(false)
+  const [ DuringFlip, setDuringFlip ] = useState<boolean>(false)  
 
   const [ Cards, setCards ] = useState<{
     src: string;
@@ -130,14 +89,17 @@ const App = () => {
     matched: boolean
   } | null>( null )
 
-  //  DBG
-  // const [ hasClickedHandleGuessing, setHasClickedHandleGuessing ] = useState<boolean>(false)
+  useEffect(() => {
+    // Call the function to read lines when the component mounts
+    readLinesFromInfile().then((arr: { src: string }[]) => {
+      setCardsImgSrc(arr)
+    })
+  }, [])
 
-  // shuffle using F.Y.N. and select N items
   const N = 12
   const CardsImgN = shuffle_fisher_yates([ ... CardsImgSrc]).slice(0, N)
 
-  // double each item and shuffle w/ a condensed F.Y.N.
+  // double each item and shuffle
   const shuffle_matching_pairs = () => {
     const res = [...CardsImgN, ...CardsImgN]
       .sort(() => Math.random() - .5)
@@ -149,15 +111,9 @@ const App = () => {
         matched : false
       }))
     setCards( res )
-    // setTurns( 0 )
     setg1 (null)
     setg2 (null)
-
-    // setIsGameStarted(true) // NEW
-
   }
-
-  // console.log('/dbg shuffle', Turns, Cards)
 
   // handle guessing
   const handleGuessing = (c: {
@@ -167,7 +123,6 @@ const App = () => {
     matched: boolean
   }): void => {
 
-    // setHasClickedHandleGuessing(true) // DBG
     g1 == null ? setg1( c ) : setg2( c )
     // console.log('/guessed', c.src, c.id ) // DBG
     // 👇 won't log bc. not finished updating the state ---> should use useEffect
@@ -178,7 +133,6 @@ const App = () => {
 
     setg1(null)
     setg2(null)
-    // setTurns(Turns + 1)
     setTimeout(() => setDuringFlip (false), 100)
   }
 
@@ -195,7 +149,6 @@ const App = () => {
       setDuringFlip( true )
       if (g1.src == g2.src) {
         // console.log('/Same') // DBG
-        // operation        
         setCards ( arr => {
           return arr.map(c => {
             if ( c.src === g1.src ) {
@@ -216,35 +169,10 @@ const App = () => {
 
   // console.log(Cards) // DBG
 
-
-  // NEW
-  /*
-  const [timer, setTimer] = useState<number>(0)
-  const [isGameStarted, setIsGameStarted] = useState<boolean>(false)
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout
-
-    if (isGameStarted) {
-      intervalId = setInterval(() => {
-        setTimer((prevTimer) => prevTimer + 0.01)
-      }, 10)
-    }
-
-    return () => clearInterval(intervalId)
-  }, [isGameStarted])
-
-  useEffect(() => {
-    if (Cards.every((card) => card.matched)) {
-      setIsGameStarted(false)
-    }
-  }, [Cards])
-  */
-
-
   return (
     <>
       <div className='App'>
-        {/* <h1> open console and see more! </h1> */}
+        {/* <h1> hello, world! </h1> */}
         <div className='btn'>
           <button onClick={ shuffle_matching_pairs }>New Game</button>
         </div>
